@@ -27,13 +27,14 @@ app.post('/deploy', async (req: Request, res: Response) => {
     }
 
     const id = generateId();
-    const outputDir = path.join(__dirname, `../clonedRepos/${id}`);
+    const output = 'clonedRepos';
+    const outputDir = path.join(__dirname, `../${output}/${id}`);
 
     await simpleGit().clone(repoUrl, outputDir);
 
     const files = await getAllFiles(outputDir);
     for await (let file of files) {
-      await uploadFile(file.split('vercel/')[1], file);
+      await uploadFile(output + file.split(output)[1], file);
     }
 
     redisPubSub.lPush('build-queue', id);
