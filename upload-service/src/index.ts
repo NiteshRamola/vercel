@@ -9,11 +9,8 @@ import { getAllFiles, removeAllFiles } from './file';
 import 'dotenv/config';
 import { uploadFile } from './aws';
 
-const publisher = createClient();
-publisher.connect();
-
-const subscriber = createClient();
-subscriber.connect();
+const redisPubSub = createClient();
+redisPubSub.connect();
 
 const app = express();
 
@@ -40,9 +37,9 @@ app.post('/deploy', async (req: Request, res: Response) => {
   }
 
   await await new Promise((resolve) => setTimeout(resolve, 5000));
-  publisher.lPush('build-queue', id);
+  redisPubSub.lPush('build-queue', id);
 
-  publisher.hSet('status', id, 'uploaded');
+  redisPubSub.hSet('status', id, 'uploaded');
 
   await removeAllFiles(outputDir);
 
@@ -51,7 +48,7 @@ app.post('/deploy', async (req: Request, res: Response) => {
 
 app.get('/status', async (req, res) => {
   const id = req.query.id;
-  const response = await subscriber.hGet('status', id as string);
+  const response = await redisPubSub.hGet('status', id as string);
 
   res.json({
     status: response,
