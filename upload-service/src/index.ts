@@ -1,7 +1,6 @@
 import cors from 'cors';
 import express, { Request, Response } from 'express';
 import path from 'path';
-import fs from 'fs/promises';
 import { createClient } from 'redis';
 import simpleGit from 'simple-git';
 import { generateId } from './generateRandomId';
