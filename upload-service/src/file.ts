@@ -38,7 +38,5 @@ export const removeAllFiles = async (folderPath: string) => {
     }
   }
 
-  console.log('herere');
-
   await fs.rmdir(folderPath);
 };
