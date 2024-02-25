@@ -1,0 +1,28 @@
+{
+  "name": "vercel-build-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:watch": "esbuild --platform=node --format=cjs --outdir=dist --watch src/**/*.ts --tsconfig=tsconfig.json",
+    "build": "esbuild --platform=node --format=cjs --outdir=dist --watch src/**/*.ts --tsconfig=tsconfig.json",
+    "start:dev": "concurrently \"npm:build\" \"nodemon dist/index.js\"",
+    "start": "node dist/index.js"
+  },
+  "author": "Nitesh Ramola",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^20.11.20",
+    "aws-sdk": "^2.1564.0",
+    "dotenv": "^16.4.5",
+    "redis": "^4.6.13"
+  },
+  "devDependencies": {
+    "@types/aws-sdk": "^2.7.0",
+    "@types/redis": "^4.0.11",
+    "concurrently": "^8.2.2",
+    "esbuild": "^0.20.1",
+    "nodemon": "^3.1.0"
+  }
+}
