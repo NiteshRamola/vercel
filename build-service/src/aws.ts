@@ -1,9 +1,14 @@
 import { S3 } from 'aws-sdk';
+import 'dotenv/config';
 import fs, { promises as fsPromise } from 'fs';
 import path from 'path';
-import 'dotenv/config';
+import { getAllFiles } from './file';
 
-const s3 = new S3({});
+const s3 = new S3({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION,
+});
 const bucketName = process.env.BUCKET_NAME!;
 
 export async function downloadS3Folder(prefix: string) {
@@ -16,7 +21,7 @@ export async function downloadS3Folder(prefix: string) {
       Contents.map(async ({ Key }) => {
         if (!Key) return;
 
-        const finalOutputPath = path.resolve(__dirname, Key);
+        const finalOutputPath = path.resolve(__dirname, '../../' + Key);
         const dirName = path.dirname(finalOutputPath);
 
         if (!fs.existsSync(dirName)) {
@@ -40,40 +45,25 @@ export async function downloadS3Folder(prefix: string) {
   }
 }
 
-export async function copyFinalDist(id: string) {
-  const folderPath = path.resolve(__dirname, `output/${id}/dist`);
+export async function copyFinalDist(id: string, folderPath: string) {
   const allFiles = await getAllFiles(folderPath);
 
   await Promise.all(
     allFiles.map(async (file) => {
-      const s3Key = `dist/${id}/` + file.slice(folderPath.length + 1);
+      const s3Key = `buildRepos/${id}/` + file.slice(folderPath.length + 1);
       await uploadFile(s3Key, file);
     }),
   );
 }
 
-const getAllFiles = async (folderPath: string): Promise<string[]> => {
-  let response: string[] = [];
-
-  const allFilesAndFolders = await fsPromise.readdir(folderPath);
-
-  for (const file of allFilesAndFolders) {
-    const fullFilePath = path.resolve(folderPath, file);
-
-    if ((await fsPromise.stat(fullFilePath)).isDirectory()) {
-      response = response.concat(await getAllFiles(fullFilePath));
-    } else {
-      response.push(fullFilePath);
-    }
-  }
-
-  return response;
-};
-
 const uploadFile = async (s3Key: string, localFilePath: string) => {
   const fileContent = await fsPromise.readFile(localFilePath);
   await s3
-    .upload({ Body: fileContent, Bucket: bucketName, Key: s3Key })
+    .upload({
+      Body: fileContent,
+      Bucket: bucketName,
+      Key: s3Key.replace(/\\/g, '/'),
+    })
     .promise();
   console.log(`Uploaded: ${s3Key}`);
 };

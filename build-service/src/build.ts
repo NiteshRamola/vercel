@@ -6,7 +6,7 @@ export function buildProject(id: string) {
     const child = exec(
       `cd ${path.join(
         __dirname,
-        `clonedRepos/${id}`,
+        `../../clonedRepos/${id}`,
       )} && npm install && npm run build`,
     );
 
