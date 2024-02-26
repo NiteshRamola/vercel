@@ -9,7 +9,7 @@ export const uploadFile = async (fileName: string, localFilePath: string) => {
     .upload({
       Body: fileContent,
       Bucket: process.env.BUCKET_NAME!,
-      Key: fileName,
+      Key: fileName.replace(/\\/g, '/'),
     })
     .promise();
 

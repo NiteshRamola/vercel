@@ -1,12 +1,12 @@
 import cors from 'cors';
+import 'dotenv/config';
 import express, { Request, Response } from 'express';
 import path from 'path';
 import { createClient } from 'redis';
 import simpleGit from 'simple-git';
-import { generateId } from './generateRandomId';
-import { getAllFiles, removeAllFiles } from './file';
-import 'dotenv/config';
 import { uploadFile } from './aws';
+import { getAllFiles, removeAllFiles } from './file';
+import { generateId } from './generateRandomId';
 
 const redisPubSub = createClient();
 redisPubSub.connect();
@@ -28,7 +28,7 @@ app.post('/deploy', async (req: Request, res: Response) => {
 
     const id = generateId();
     const output = 'clonedRepos';
-    const outputDir = path.join(__dirname, `../${output}/${id}`);
+    const outputDir = path.join(__dirname, `../../${output}/${id}`);
 
     await simpleGit().clone(repoUrl, outputDir);
 
