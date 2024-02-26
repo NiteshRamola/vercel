@@ -57,7 +57,7 @@ export async function copyFinalDist(id: string, folderPath: string) {
 }
 
 const uploadFile = async (s3Key: string, localFilePath: string) => {
-  const fileContent = await fsPromise.readFile(localFilePath);
+  const fileContent = fs.createReadStream(localFilePath);
   await s3
     .upload({
       Body: fileContent,
