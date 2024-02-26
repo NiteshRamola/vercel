@@ -8,8 +8,8 @@ import { uploadFile } from './aws';
 import { getAllFiles, removeAllFiles } from './file';
 import { generateId } from './generateRandomId';
 
-const redisPubSub = createClient();
-redisPubSub.connect();
+const redisClient = createClient();
+redisClient.connect();
 
 const app = express();
 
@@ -37,8 +37,8 @@ app.post('/deploy', async (req: Request, res: Response) => {
       await uploadFile(output + file.split(output)[1], file);
     }
 
-    redisPubSub.lPush('build-queue', id);
-    redisPubSub.hSet('status', id, 'uploaded');
+    redisClient.lPush('build-queue', id);
+    redisClient.hSet('status', id, 'uploaded');
 
     await removeAllFiles(outputDir);
 
@@ -57,7 +57,7 @@ app.get('/status', async (req, res) => {
       return res.status(400).json({ success: false, msg: 'ID is required' });
     }
 
-    const response = await redisPubSub.hGet('status', id as string);
+    const response = await redisClient.hGet('status', id as string);
     res.json({
       status: response,
     });
