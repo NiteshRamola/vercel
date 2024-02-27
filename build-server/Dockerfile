@@ -10,12 +10,13 @@ RUN apt-get install git -y
 
 WORKDIR /home/app
 
-COPY main.sh main.sh
-COPY tsconfig.json tsconfig.json
-COPY src/index.ts src/index.ts
 COPY package*.json .
-
 RUN npm install
+
+COPY main.sh main.sh
+COPY src/index.ts src/index.ts
+COPY tsconfig.json tsconfig.json
+
 RUN npm run build
 
 RUN chmod +x main.sh

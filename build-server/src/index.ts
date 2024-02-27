@@ -18,13 +18,13 @@ const PROJECT_ID = process.env.PROJECT_ID;
 async function main() {
   console.log('Starting script...');
 
-  const outDirPath = path.join(__dirname, 'output');
+  const outDirPath = path.join(__dirname, '../output');
 
   try {
     await execAsync(`cd ${outDirPath} && npm install && npm run build`);
     console.log('Build complete');
 
-    const distFolderPath = path.join(__dirname, 'output', 'dist');
+    const distFolderPath = path.join(__dirname, '../output', 'dist');
     const distFolderContents = await fs.promises.readdir(distFolderPath, {
       withFileTypes: true,
     });
