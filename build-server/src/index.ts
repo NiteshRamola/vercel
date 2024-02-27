@@ -27,27 +27,13 @@ async function main() {
     await execAsync(`cd ${outputFolderPath} && npm install && npm run build`);
     console.log('Build complete');
 
-    const subfolders = await getSubfolders(outputFolderPath);
-
-    for (const subfolder of subfolders) {
-      const subfolderPath = path.join(outputFolderPath, subfolder);
-      const s3KeyPrefix = `__outputs/${PROJECT_ID}/${subfolder}`;
-
-      await uploadFolder(subfolderPath, s3KeyPrefix);
-    }
+    const buildFolderPath = path.join(outputFolderPath, '/dist');
+    await uploadFolder(buildFolderPath, `_outputs/${PROJECT_ID}`);
 
     console.log('Done...');
   } catch (error) {
     console.error('Error:', error);
   }
-}
-
-async function getSubfolders(folderPath: string): Promise<string[]> {
-  const folderContents = await readdir(folderPath, { withFileTypes: true });
-  const subfolders = folderContents
-    .filter((item) => item.isDirectory())
-    .map((item) => item.name);
-  return subfolders;
 }
 
 async function uploadFolder(
