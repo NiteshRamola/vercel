@@ -2,6 +2,7 @@ import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { exec } from 'child_process';
 import 'dotenv/config';
 import fs from 'fs';
+import { Redis } from 'ioredis';
 import mime from 'mime-types';
 import path from 'path';
 import { promisify } from 'util';
@@ -16,21 +17,30 @@ const s3Client = new S3Client({
   },
 });
 
+const publisher = new Redis(process.env.REDIS_URI!);
+
 const PROJECT_ID = process.env.PROJECT_ID;
+
+function publishLog(log: string) {
+  publisher.publish(`logs:${PROJECT_ID}`, JSON.stringify({ log }));
+}
 
 async function main() {
   console.log('Starting script...');
+  publishLog('Build started...');
 
   const outputFolderPath = path.join(__dirname, '../output');
 
   try {
     await execAsync(`cd ${outputFolderPath} && npm install && npm run build`);
     console.log('Build complete');
+    publishLog(`Build Complete`);
 
     const buildFolderPath = path.join(outputFolderPath, '/dist');
     await uploadFolder(buildFolderPath, `_outputs/${PROJECT_ID}`);
 
     console.log('Done...');
+    publishLog(`Done...`);
   } catch (error) {
     console.error('Error:', error);
   }
@@ -49,8 +59,6 @@ async function uploadFolder(
     if (item.isDirectory()) {
       await uploadFolder(itemPath, s3Key);
     } else {
-      console.log('Uploading', itemPath);
-
       const command = new PutObjectCommand({
         Bucket: process.env.BUCKET_NAME,
         Key: s3Key,
@@ -60,6 +68,7 @@ async function uploadFolder(
 
       await s3Client.send(command);
       console.log('Uploaded', itemPath);
+      publishLog(`uploaded ${itemPath}`);
     }
   }
 }
@@ -69,15 +78,24 @@ function execAsync(command: string): Promise<void> {
     const p = exec(command, (error, stdout, stderr) => {
       if (error) {
         console.error('Error executing command:', error);
+        publishLog(`Error: ${error.toString()}`);
         reject(error);
       } else {
         console.log(stdout);
+        publishLog(stdout.toString());
         resolve();
       }
     });
 
-    p.stdout?.on('data', (data) => console.log(data.toString()));
-    p.stderr?.on('data', (data) => console.error('Error:', data.toString()));
+    p.stdout?.on('data', (data) => {
+      console.log(data.toString());
+      publishLog(data.toString());
+    });
+
+    p.stderr?.on('data', (data) => {
+      console.error('Error:', data.toString());
+      publishLog(`Error: ${data.toString()}`);
+    });
   });
 }
 
