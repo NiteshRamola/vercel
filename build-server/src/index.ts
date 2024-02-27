@@ -4,6 +4,9 @@ import 'dotenv/config';
 import fs from 'fs';
 import mime from 'mime-types';
 import path from 'path';
+import { promisify } from 'util';
+
+const readdir = promisify(fs.readdir);
 
 const s3Client = new S3Client({
   region: process.env.AWS_REGION,
@@ -18,37 +21,60 @@ const PROJECT_ID = process.env.PROJECT_ID;
 async function main() {
   console.log('Starting script...');
 
-  const outDirPath = path.join(__dirname, '../output');
+  const outputFolderPath = path.join(__dirname, '../output');
 
   try {
-    await execAsync(`cd ${outDirPath} && npm install && npm run build`);
+    await execAsync(`cd ${outputFolderPath} && npm install && npm run build`);
     console.log('Build complete');
 
-    const distFolderPath = path.join(__dirname, '../output', 'dist');
-    const distFolderContents = await fs.promises.readdir(distFolderPath, {
-      withFileTypes: true,
-    });
+    const subfolders = await getSubfolders(outputFolderPath);
 
-    for (const file of distFolderContents) {
-      const filePath = path.join(distFolderPath, file.name);
-      if (file.isDirectory()) continue;
+    for (const subfolder of subfolders) {
+      const subfolderPath = path.join(outputFolderPath, subfolder);
+      const s3KeyPrefix = `__outputs/${PROJECT_ID}/${subfolder}`;
 
-      console.log('Uploading', filePath);
-
-      const command = new PutObjectCommand({
-        Bucket: process.env.BUCKET_NAME,
-        Key: `__outputs/${PROJECT_ID}/${file.name}`,
-        Body: fs.createReadStream(filePath),
-        ContentType: mime.lookup(filePath) || '',
-      });
-
-      await s3Client.send(command);
-      console.log('Uploaded', filePath);
+      await uploadFolder(subfolderPath, s3KeyPrefix);
     }
 
     console.log('Done...');
   } catch (error) {
     console.error('Error:', error);
+  }
+}
+
+async function getSubfolders(folderPath: string): Promise<string[]> {
+  const folderContents = await readdir(folderPath, { withFileTypes: true });
+  const subfolders = folderContents
+    .filter((item) => item.isDirectory())
+    .map((item) => item.name);
+  return subfolders;
+}
+
+async function uploadFolder(
+  folderPath: string,
+  s3KeyPrefix: string,
+): Promise<void> {
+  const folderContents = await readdir(folderPath, { withFileTypes: true });
+
+  for (const item of folderContents) {
+    const itemPath = path.join(folderPath, item.name);
+    const s3Key = path.join(s3KeyPrefix, item.name);
+
+    if (item.isDirectory()) {
+      await uploadFolder(itemPath, s3Key);
+    } else {
+      console.log('Uploading', itemPath);
+
+      const command = new PutObjectCommand({
+        Bucket: process.env.BUCKET_NAME,
+        Key: s3Key,
+        Body: fs.createReadStream(itemPath),
+        ContentType: mime.lookup(itemPath) || '',
+      });
+
+      await s3Client.send(command);
+      console.log('Uploaded', itemPath);
+    }
   }
 }
 
