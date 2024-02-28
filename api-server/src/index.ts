@@ -11,7 +11,11 @@ const app = express();
 const server = http.createServer(app);
 
 const subscriber = new Redis(process.env.REDIS_URI!);
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+  },
+});
 
 app.use(express.json());
 
