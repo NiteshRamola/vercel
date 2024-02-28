@@ -1,4 +1,5 @@
 import { ECSClient, LaunchType, RunTaskCommand } from '@aws-sdk/client-ecs';
+import cors from 'cors';
 import 'dotenv/config';
 import express, { Request, Response } from 'express';
 import http from 'http';
@@ -17,6 +18,7 @@ const io = new Server(server, {
   },
 });
 
+app.use(cors());
 app.use(express.json());
 
 const ecsClient = new ECSClient({
