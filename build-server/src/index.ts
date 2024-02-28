@@ -9,6 +9,18 @@ import { promisify } from 'util';
 
 const readdir = promisify(fs.readdir);
 
+// Constants
+const DEPLOYMENT_STATUS = {
+  START: process.env.DEPLOYMENT_START || 'Deployment started',
+  END: process.env.DEPLOYMENT_END || 'Deployment completed',
+  ERROR: process.env.DEPLOYMENT_ERROR || 'Error',
+};
+
+// Environment variables
+const PROJECT_ID = process.env.PROJECT_ID;
+const DEPLOYMENT_ID = process.env.DEPLOYMENT_ID;
+
+// AWS S3 client setup
 const s3Client = new S3Client({
   region: process.env.AWS_REGION,
   credentials: {
@@ -17,38 +29,45 @@ const s3Client = new S3Client({
   },
 });
 
+// Redis client setup
 const publisher = new Redis(process.env.REDIS_URI!);
 
-const PROJECT_ID = process.env.PROJECT_ID;
-
-function publishLog(log: string) {
-  publisher.publish(`logs:${PROJECT_ID}`, JSON.stringify({ log }));
+// Function to publish log to Redis
+async function publishLog(log: string) {
+  console.log(log);
+  await publisher.publish(
+    `logs`,
+    JSON.stringify({
+      log: log,
+      deployment_id: DEPLOYMENT_ID,
+      project_id: PROJECT_ID,
+    }),
+  );
 }
 
+// Main deployment function
 async function main() {
-  console.log('Starting script...');
-  publishLog('Build started...');
+  await publishLog(DEPLOYMENT_STATUS.START);
 
   const outputFolderPath = path.join(__dirname, '../output');
 
   try {
+    // Execute npm install and npm run build
     await execAsync(`cd ${outputFolderPath} && npm install && npm run build`);
-    console.log('Build complete');
-    publishLog(`Build Complete`);
+    await publishLog(`Build Complete`);
 
     const buildFolderPath = path.join(outputFolderPath, '/dist');
     await uploadFolder(buildFolderPath, `_outputs/${PROJECT_ID}`);
 
-    console.log('Done...');
-    publishLog(`Done...`);
+    await publishLog(DEPLOYMENT_STATUS.END);
   } catch (error) {
-    publishLog(`Error: ${error}`);
-    console.error('Error:', error);
+    await publishLog(`${DEPLOYMENT_STATUS.ERROR}: ${error}`);
   } finally {
     await publisher.quit();
   }
 }
 
+// Function to recursively upload a folder to S3
 async function uploadFolder(
   folderPath: string,
   s3KeyPrefix: string,
@@ -62,42 +81,43 @@ async function uploadFolder(
     if (item.isDirectory()) {
       await uploadFolder(itemPath, s3Key);
     } else {
-      const command = new PutObjectCommand({
-        Bucket: process.env.BUCKET_NAME,
-        Key: s3Key,
-        Body: fs.createReadStream(itemPath),
-        ContentType: mime.lookup(itemPath) || '',
-      });
-
-      await s3Client.send(command);
-      console.log('Uploaded', itemPath);
-      publishLog(`uploaded ${itemPath}`);
+      await uploadFileToS3(itemPath, s3Key);
     }
   }
 }
 
+// Function to upload a file to S3
+async function uploadFileToS3(filePath: string, s3Key: string): Promise<void> {
+  const command = new PutObjectCommand({
+    Bucket: process.env.BUCKET_NAME,
+    Key: s3Key,
+    Body: fs.createReadStream(filePath),
+    ContentType: mime.lookup(filePath) || '',
+  });
+
+  await s3Client.send(command);
+  await publishLog(`Uploaded ${filePath}`);
+}
+
+// Asynchronous execution of a shell command
 function execAsync(command: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    const p = exec(command, (error, stdout, stderr) => {
+    const p = exec(command, async (error, stdout, stderr) => {
       if (error) {
-        console.error('Error executing command:', error);
-        publishLog(`Error: ${error.toString()}`);
+        await publishLog(`${DEPLOYMENT_STATUS.ERROR}: ${error.toString()}`);
         reject(error);
       } else {
-        console.log(stdout);
-        publishLog(stdout.toString());
+        await publishLog(stdout.toString());
         resolve();
       }
     });
 
-    p.stdout?.on('data', (data) => {
-      console.log(data.toString());
-      publishLog(data.toString());
+    p.stdout?.on('data', async (data) => {
+      await publishLog(data.toString());
     });
 
-    p.stderr?.on('data', (data) => {
-      console.error('Error:', data.toString());
-      publishLog(`Error: ${data.toString()}`);
+    p.stderr?.on('data', async (data) => {
+      await publishLog(`${DEPLOYMENT_STATUS.ERROR}: ${data.toString()}`);
     });
   });
 }
