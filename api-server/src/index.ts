@@ -1,9 +1,17 @@
 import { ECSClient, LaunchType, RunTaskCommand } from '@aws-sdk/client-ecs';
 import 'dotenv/config';
 import express, { Request, Response } from 'express';
+import http from 'http';
+import Redis from 'ioredis';
 import { generateSlug } from 'random-word-slugs';
+import { Server, Socket } from 'socket.io';
 
 const app = express();
+
+const server = http.createServer(app);
+
+const subscriber = new Redis(process.env.REDIS_URI!);
+const io = new Server(server);
 
 app.use(express.json());
 
@@ -63,6 +71,7 @@ app.post('/deploy', async (req: Request, res: Response) => {
               },
               { name: 'AWS_REGION', value: process.env.AWS_REGION },
               { name: 'BUCKET_NAME', value: process.env.BUCKET_NAME },
+              { name: 'REDIS_URI', value: process.env.REDIS_URI },
             ],
           },
         ],
@@ -81,7 +90,26 @@ app.post('/deploy', async (req: Request, res: Response) => {
   }
 });
 
+io.on('connection', (socket: Socket) => {
+  socket.on('subscribe', (channel) => {
+    socket.join(channel);
+    console.log('channel joined', channel);
+    socket.emit('message', `Joined ${channel}`);
+  });
+});
+
+async function initRedisSubscribe() {
+  console.log('Subscribed to logs....');
+  subscriber.psubscribe('logs:*');
+  subscriber.on('pmessage', (pattern, channel, message) => {
+    console.log('message redis received', message, channel);
+    io.to(channel).emit('message', message);
+  });
+}
+
+initRedisSubscribe();
+
 const PORT = 8000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on Port: ${PORT}`);
 });

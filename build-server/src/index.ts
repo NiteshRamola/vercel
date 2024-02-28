@@ -42,7 +42,10 @@ async function main() {
     console.log('Done...');
     publishLog(`Done...`);
   } catch (error) {
+    publishLog(`Error: ${error}`);
     console.error('Error:', error);
+  } finally {
+    await publisher.quit();
   }
 }
 
