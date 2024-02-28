@@ -1,0 +1,167 @@
+{
+	"info": {
+		"_postman_id": "3003430b-1578-4f4a-ba84-ee25999179d8",
+		"name": "Vercel",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28848278"
+	},
+	"item": [
+		{
+			"name": "Add Project",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"component-lib\",\r\n    \"gitURL\": \"https://github.com/mayank2021/component-lib.git\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/project",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"project"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Deployment",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"projectId\": \"c89f6193-79a8-4dcc-aeac-82a6d219f428\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/deploy",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"deploy"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Fetch Deployment Logs",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/logs/31fb2bd4-7307-4a41-9f3b-77b684a1e253?page=1&limit=100",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"logs",
+						"31fb2bd4-7307-4a41-9f3b-77b684a1e253"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "limit",
+							"value": "100"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Fetch Deployment",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/deployment/31fb2bd4-7307-4a41-9f3b-77b684a1e253",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"deployment",
+						"31fb2bd4-7307-4a41-9f3b-77b684a1e253"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Fetch project",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/project/c89f6193-79a8-4dcc-aeac-82a6d219f428",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"project",
+						"c89f6193-79a8-4dcc-aeac-82a6d219f428"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
