@@ -304,7 +304,7 @@ subscriber.on('message', async (channel, message) => {
 });
 
 // Server start
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.API_SERVER_PORT || 8001;
 server.listen(PORT, () => {
   console.log(`Server running on Port: ${PORT}`);
 });
