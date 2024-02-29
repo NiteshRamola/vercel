@@ -5,6 +5,7 @@ import 'dotenv/config';
 import express, { Request, Response } from 'express';
 import http from 'http';
 import Redis from 'ioredis';
+import morgan from 'morgan';
 import { generateSlug } from 'random-word-slugs';
 import { Server } from 'socket.io';
 import { z } from 'zod';
@@ -20,6 +21,7 @@ const DEPLOYMENT_STATUS = {
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(morgan('dev'));
 
 // Initialize HTTP server and Socket.IO
 const server = http.createServer(app);
@@ -170,7 +172,7 @@ app.post('/deploy', async (req: Request, res: Response) => {
 
     return res.json({
       status: 'queued',
-      data: { url: `http://${project.subDomain}.nitesh.com`, deployment },
+      data: { url: `http://${project.subDomain}.niteshramola.in`, deployment },
     });
   } catch (err) {
     console.log(err);
