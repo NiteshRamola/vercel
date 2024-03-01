@@ -132,3 +132,5 @@ dist
 clonedRepos
 
 *.pem
+
+frontend-nextjs
