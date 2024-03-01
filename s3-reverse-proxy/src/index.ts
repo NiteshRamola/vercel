@@ -1,4 +1,4 @@
-import { DeploymentStatus, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import 'dotenv/config';
 import express, { Request, Response } from 'express';
 import httpProxy from 'http-proxy';
@@ -14,31 +14,31 @@ app.use(async (req: Request, res: Response) => {
   const hostname = req.hostname;
   const subdomain = hostname.split('.')[0];
 
-  const deployment = await prisma.deployment.findFirst({
+  const project = await prisma.project.findFirst({
     where: {
-      project: {
-        subDomain: subdomain,
-      },
-      status: DeploymentStatus.COMPLETED,
-    },
-    orderBy: {
-      createdAt: 'desc',
+      subDomain: subdomain,
     },
     select: {
       id: true,
     },
   });
 
-  console.log('Latest Completed Deployment ID:', deployment?.id);
+  console.log('Latest Completed project ID:', project?.id);
 
-  const resolvesTo = `${BASE_PATH}/${deployment?.id}`;
+  const resolvesTo = `${BASE_PATH}/${project?.id}`;
 
   return proxy.web(req, res, { target: resolvesTo, changeOrigin: true });
 });
 
 proxy.on('proxyReq', (proxyReq, req, res) => {
   const url = req.url;
-  if (url === '/') proxyReq.path += 'index.html';
+  if (url === '/') {
+    proxyReq.path += 'index.html';
+  } else if (!url?.split('.')[1]) {
+    proxyReq.path =
+      proxyReq.path.substring(0, proxyReq.path.lastIndexOf('/') + 1) +
+      'index.html';
+  }
 
   console.log(url);
 });
