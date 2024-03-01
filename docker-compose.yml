@@ -18,13 +18,3 @@ services:
       - '8000:8000'
     env_file:
       - ./s3-reverse-proxy/.env
-  nginx:
-    image: nginx
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./cloudflare:/etc/nginx/cloudflare
-    ports:
-      - '80:80'
-    depends_on:
-      - api-server
-      - s3-reverse-proxy
