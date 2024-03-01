@@ -201,6 +201,13 @@ app.get('/project/:id', async (req: Request, res: Response) => {
   }
 });
 
+app.get('/health', async (req: Request, res: Response) => {
+  res.json({
+    success: false,
+    msg: 'Running',
+  });
+});
+
 app.get('/deployment/:id', async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
