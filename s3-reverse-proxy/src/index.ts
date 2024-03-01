@@ -28,6 +28,22 @@ app.use(async (req: Request, res: Response) => {
     return res.sendFile(path.join(__dirname, '../static', 'error.html'));
   }
 
+  const deployment = await prisma.deployment.findFirst({
+    where: {
+      projectId: project.id,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+    select: {
+      status: true,
+    },
+  });
+
+  if (!deployment || deployment.status !== 'COMPLETED') {
+    return res.sendFile(path.join(__dirname, '../static', 'wait.html'));
+  }
+
   console.log('Latest Completed project ID:', project?.id);
 
   const resolvesTo = `${BASE_PATH}/${project?.id}`;
