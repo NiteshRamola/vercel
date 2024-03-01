@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Deployment Status</title>
+    <style>
+      body {
+        font-family: 'Arial', sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f8f9fa;
+      }
+
+      .container {
+        text-align: center;
+        animation: fadeIn 0.5s ease-in-out;
+      }
+
+      h1 {
+        color: #d9534f; /* Bootstrap's danger color */
+        font-size: 2.5em;
+        margin-bottom: 20px;
+        animation: shake 0.8s;
+      }
+
+      p {
+        color: #333;
+        font-size: 1.2em;
+        animation: fadeIn 1s ease-in-out;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 600px) {
+        h1 {
+          font-size: 2em;
+        }
+
+        p {
+          font-size: 1em;
+        }
+      }
+
+      /* Animations */
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        10%,
+        30%,
+        50%,
+        70%,
+        90% {
+          transform: translateX(-10px);
+        }
+        20%,
+        40%,
+        60%,
+        80% {
+          transform: translateX(10px);
+        }
+      }
+
+      @keyframes fadeIn {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Incorrect Link</h1>
+      <p>The provided link is incorrect. Please check and try again.</p>
+    </div>
+  </body>
+</html>

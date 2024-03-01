@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import 'dotenv/config';
 import express, { Request, Response } from 'express';
 import httpProxy from 'http-proxy';
+import path from 'path';
 const app = express();
 
 const proxy = httpProxy.createProxy();
@@ -22,6 +23,10 @@ app.use(async (req: Request, res: Response) => {
       id: true,
     },
   });
+
+  if (!project) {
+    return res.sendFile(path.join(__dirname, '../static', 'error.html'));
+  }
 
   console.log('Latest Completed project ID:', project?.id);
 
