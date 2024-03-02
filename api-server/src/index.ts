@@ -9,6 +9,7 @@ import morgan from 'morgan';
 import { generateSlug } from 'random-word-slugs';
 import { Server } from 'socket.io';
 import { z } from 'zod';
+import { version } from '../package.json';
 
 // Constants
 const DEPLOYMENT_STATUS = {
@@ -203,8 +204,9 @@ app.get('/project/:id', async (req: Request, res: Response) => {
 
 app.get('/health', async (req: Request, res: Response) => {
   res.json({
-    success: false,
-    msg: 'Running',
+    success: true,
+    msg: 'Up and running',
+    version,
   });
 });
 
