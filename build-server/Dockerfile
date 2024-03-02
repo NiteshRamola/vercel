@@ -1,25 +1,24 @@
 FROM ubuntu:focal
 
-RUN apt-get update
-RUN apt-get install -y curl
-RUN curl -sL https://deb.nodesource.com/setup_20.x | bash -
-RUN apt-get upgrade -y
-RUN apt-get install -y nodejs
-
-RUN apt-get install git -y
+RUN apt-get update \
+    && apt-get install -y curl \
+    && curl -sL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get upgrade -y \
+    && apt-get install -y nodejs \
+    && apt-get install -y git
 
 WORKDIR /home/app
 
 COPY package*.json .
 RUN npm install --production
 
-COPY main.sh main.sh
-COPY src/index.ts src/index.ts
-COPY tsconfig.json tsconfig.json
+COPY . .
 
 RUN npm run build
 
-RUN chmod +x main.sh
-RUN chmod +x dist/index.js
+RUN chmod +x main.sh dist/index.js
 
 ENTRYPOINT [ "/home/app/main.sh" ]
+
+RUN apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
