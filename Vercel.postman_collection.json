@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "3003430b-1578-4f4a-ba84-ee25999179d8",
+		"_postman_id": "cbf8d48c-fb36-4897-9274-c7dd39b8e003",
 		"name": "Vercel",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "28848278"
+		"_exporter_id": "12092733"
 	},
 	"item": [
 		{
@@ -13,7 +13,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"component-lib\",\r\n    \"gitURL\": \"https://github.com/mayank2021/component-lib.git\"\r\n}",
+					"raw": "{\n    \"name\": \"component-lib\",\n    \"gitURL\": \"https://github.com/mayank2021/component-lib.git\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -21,11 +21,10 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8000/project",
+					"raw": "{{url}}/project",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8000",
 					"path": [
 						"project"
 					]
@@ -40,7 +39,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"projectId\": \"c89f6193-79a8-4dcc-aeac-82a6d219f428\"\r\n}",
+					"raw": "{\n    \"projectId\": \"502d308f-6296-4725-b0b9-1a9952045088\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -48,11 +47,10 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8000/deploy",
+					"raw": "{{url}}/deploy",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8000",
 					"path": [
 						"deploy"
 					]
@@ -62,30 +60,17 @@
 		},
 		{
 			"name": "Fetch Deployment Logs",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
-					"raw": "localhost:8000/logs/31fb2bd4-7307-4a41-9f3b-77b684a1e253?page=1&limit=100",
+					"raw": "{{url}}/logs/87200a8a-5e8a-4b67-95e3-dcfe7ca1cb71?page=1&limit=100",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8000",
 					"path": [
 						"logs",
-						"31fb2bd4-7307-4a41-9f3b-77b684a1e253"
+						"87200a8a-5e8a-4b67-95e3-dcfe7ca1cb71"
 					],
 					"query": [
 						{
@@ -103,30 +88,17 @@
 		},
 		{
 			"name": "Fetch Deployment",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
-					"raw": "localhost:8000/deployment/31fb2bd4-7307-4a41-9f3b-77b684a1e253",
+					"raw": "{{url}}/deployment/87200a8a-5e8a-4b67-95e3-dcfe7ca1cb71",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8000",
 					"path": [
 						"deployment",
-						"31fb2bd4-7307-4a41-9f3b-77b684a1e253"
+						"87200a8a-5e8a-4b67-95e3-dcfe7ca1cb71"
 					]
 				}
 			},
@@ -134,30 +106,34 @@
 		},
 		{
 			"name": "Fetch project",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
-					"raw": "localhost:8000/project/c89f6193-79a8-4dcc-aeac-82a6d219f428",
+					"raw": "{{url}}/project/c89f6193-79a8-4dcc-aeac-82a6d219f428",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8000",
 					"path": [
 						"project",
 						"c89f6193-79a8-4dcc-aeac-82a6d219f428"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "health",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/health",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"health"
 					]
 				}
 			},
