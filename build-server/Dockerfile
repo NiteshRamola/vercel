@@ -11,7 +11,7 @@ RUN apt-get install git -y
 WORKDIR /home/app
 
 COPY package*.json .
-RUN npm install
+RUN npm install --production
 
 COPY main.sh main.sh
 COPY src/index.ts src/index.ts
