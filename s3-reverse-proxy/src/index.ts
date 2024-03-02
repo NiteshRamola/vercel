@@ -24,6 +24,8 @@ app.use(async (req: Request, res: Response) => {
     },
   });
 
+  console.log('Project ID:', project?.id, 'Sub Domain:', subdomain);
+
   if (!project) {
     return res.sendFile(path.join(__dirname, '../static', 'error.html'));
   }
@@ -37,14 +39,22 @@ app.use(async (req: Request, res: Response) => {
     },
     select: {
       status: true,
+      id: true,
     },
   });
+
+  console.log(
+    'Deployment Id:',
+    deployment?.id,
+    'Deployment Status:',
+    deployment?.status,
+    'Sub Domain:',
+    subdomain,
+  );
 
   if (!deployment || deployment.status !== 'COMPLETED') {
     return res.sendFile(path.join(__dirname, '../static', 'wait.html'));
   }
-
-  console.log('Latest Completed project ID:', project?.id);
 
   const resolvesTo = `${BASE_PATH}/${project?.id}`;
 
