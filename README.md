@@ -1,12 +1,16 @@
 ## Overview
 
-This project is designed to streamline the deployment of React projects from a GitHub repository. It consists of three services: `api-service`, `build-service`, and `s3-reverse-proxy`. The `api-service` and `s3-reverse-proxy` are containerized using Docker, and a Docker Compose file is provided to run these services together. Additionally, the `build-service` is deployed on Amazon ECS (Elastic Container Service) and is triggered when the `api-service` makes a specific call.
+This project is designed to streamline the deployment of frontend projects (React, Angular, etc.) from public repositories of version control platforms(Github, Bitbucket, etc.). It consists of three services: api-service, build-service, and s3-reverse-proxy. The api-service and s3-reverse-proxy are containerized using Docker, and a Docker Compose file is provided to run these services together. Additionally, the build-service is deployed on Amazon ECS (Elastic Container Service) and is triggered when the api-service makes a specific call.
+
+### Note:
+
+The frontend project to be deployed must include an npm run build command in its package.json file to ensure a successful build process.
 
 ### Project Functionality
 
-The primary functionality of this project is to accept a GitHub URL of a React project through the `api-service`. Upon receiving the GitHub URL, the `build-service` is triggered on Amazon ECS. This service initiates the build process for the specified React project and provides a deployed URL. The `s3-reverse-proxy` service acts as a reverse proxy, forwarding requests to an S3 bucket to serve the build of the project.
+The primary functionality of this project is to accept a GitHub URL of a frontend project through the `api-service`. Upon receiving the GitHub URL, the `build-service` is triggered on Amazon ECS. This service initiates the build process for the specified frontend project and provides a deployed URL. The `s3-reverse-proxy` service acts as a reverse proxy, forwarding requests to an S3 bucket to serve the build of the project.
 
-This streamlined process allows users to easily deploy their React projects by providing a GitHub URL, and the project takes care of the necessary build and deployment steps.
+This streamlined process allows users to easily deploy their frontend projects by providing a GitHub URL, and the project takes care of the necessary build and deployment steps.
 
 ## Services
 
@@ -16,7 +20,7 @@ The `api-service` is responsible for handling API requests. It is containerized 
 
 ### 2. build-service
 
-The `build-service` is deployed on Amazon ECS and is designed to handle build processes. It is triggered by the `api-service` when a specific API call is made. This service performs the necessary build actions, such as accepting a GitHub URL of a React project, and responds accordingly.
+The `build-service` is deployed on Amazon ECS and is designed to handle build processes. It is triggered by the `api-service` when a specific API call is made. This service performs the necessary build actions, such as accepting a GitHub URL of a frontend project, and responds accordingly.
 
 ### 3. s3-reverse-proxy
 
@@ -65,7 +69,7 @@ The `build-service` is deployed on Amazon ECS. The ECS deployment configuration 
 
 2. Access the `api-service` at `http://localhost:api-service-port` (replace `api-service-port` with the actual port configured for the `api-service`).
 
-3. When specific API calls are made to the `api-service`, the `build-service` on Amazon ECS will be triggered automatically. This includes providing a GitHub URL of a React project.
+3. When specific API calls are made to the `api-service`, the `build-service` on Amazon ECS will be triggered automatically. This includes providing a GitHub URL of a frontend project.
 
 4. Upon successful execution, the project will be deployed, and a specific domain will provide the deployed URL.
 
