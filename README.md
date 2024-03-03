@@ -26,6 +26,8 @@ The `s3-reverse-proxy` service is containerized using Docker. It acts as a rever
 
 - **Node.js, TypeScript, Express.js**: For server-side development and API handling.
 - **Prisma, PostgreSQL**: Database access and management.
+- **Redis**: In-memory data structure store, used for pub/sub functionality.
+- **Socket.IO**: Real-time web socket communication for sending realtime logs of the build to the frontend.
 - **Docker**: Containerization for deployment and scalability.
 
 ## Docker Compose
