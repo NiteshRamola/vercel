@@ -1,6 +1,6 @@
 ## Overview
 
-This project is designed to streamline the deployment of frontend projects (React, Angular, etc.) from public repositories of version control platforms(Github, Bitbucket, etc.). It consists of three services: api-service, build-service, and s3-reverse-proxy. The api-service and s3-reverse-proxy are containerized using Docker, and a Docker Compose file is provided to run these services together. Additionally, the build-service is deployed on Amazon ECS (Elastic Container Service) and is triggered when the api-service makes a specific call.
+This project is designed to streamline the deployment of frontend projects (React, Angular, etc.) from public repositories of version control platforms(Github, Bitbucket, etc.). It consists of three services: `api-service`, `build-service`, and `s3-reverse-proxy`. The `api-service` and `s3-reverse-proxy` are containerized using Docker, and a Docker Compose file is provided to run these services together. Additionally, the `build-service` is deployed on Amazon ECS (Elastic Container Service) and is triggered when the `api-service` makes a specific call.
 
 ### Note:
 
