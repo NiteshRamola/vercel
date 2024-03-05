@@ -102,7 +102,7 @@ async function uploadFileToS3(filePath: string, s3Key: string): Promise<void> {
 // Asynchronous execution of a shell command
 function execAsync(command: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    const p = exec(command, async (error, stdout, stderr) => {
+    const p = exec(command, { env: {} }, async (error, stdout, stderr) => {
       if (error) {
         await publishLog(`${DEPLOYMENT_STATUS.ERROR}: ${error.toString()}`);
         reject(error);
