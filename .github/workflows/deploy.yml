@@ -1,0 +1,28 @@
+name: Deploy on Ec2
+
+on:
+  push:
+    branches: ['deployment']
+  pull_request:
+    branches: ['deployment']
+jobs:
+  build:
+    runs-on: [self-hosted]
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+
+  deploy:
+    needs: build
+    runs-on: [aws-ec2]
+    steps:
+      - name: Update env variables
+        run:
+          touch api-server/.env && echo "${{ secrets.API_SERVER_SECRETS }}" > api-server/.env
+          touch s3-reverse-proxy/.env && echo "${{ secrets.S3_REVERSE_PROXY_SECRETS }}" > s3-reverse-proxy/.env
+          touch api-server/prisma/ca.pem && echo "${{ secrets.POSTGRES_KEY_FILE }}" > api-server/prisma/ca.pem
+          touch s3-reverse-proxy/prisma/ca.pem && echo "${{ secrets.POSTGRES_KEY_FILE }}" > s3-reverse-proxy/prisma/ca.pem
+      - name: Delete old containers
+        run: docker-compose down --volumes --rmi local
+      - name: Run docker containers
+        run: docker-compose up -d
