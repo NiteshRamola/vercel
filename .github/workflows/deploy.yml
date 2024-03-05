@@ -2,9 +2,7 @@ name: Deploy on Ec2
 
 on:
   push:
-    branches: [deployment]
-  pull_request:
-    branches: [deployment]
+    branches: ['deployment']
 jobs:
   build:
     runs-on: [self-hosted]
