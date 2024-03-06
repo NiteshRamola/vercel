@@ -2,6 +2,13 @@ name: Deploy on Ec2
 on:
   push:
     branches: ['deployment']
+    paths-ignore:
+      - '**/*.md'
+      - LICENSE
+      - '**/*.gitignore'
+      - '**/*.prettierrc'
+      - '**/tsconfig.json'
+      - '**/.env*'
   workflow_dispatch:
 jobs:
   build:
