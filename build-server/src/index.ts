@@ -1,6 +1,6 @@
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { exec } from 'child_process';
-import 'dotenv/config';
+import dotenv from 'dotenv';
 import fs from 'fs';
 import { Redis } from 'ioredis';
 import mime from 'mime-types';
@@ -8,6 +8,8 @@ import path from 'path';
 import { promisify } from 'util';
 
 const readdir = promisify(fs.readdir);
+
+dotenv.config();
 
 // Constants
 const DEPLOYMENT_STATUS = {
@@ -99,18 +101,40 @@ async function uploadFileToS3(filePath: string, s3Key: string): Promise<void> {
   await publishLog(`Uploaded ${filePath}`);
 }
 
+// Function to get env without .env variables
+function customEnvironmentForExec() {
+  interface ProcessEnv {
+    [key: string]: string | undefined;
+  }
+
+  const result = dotenv.config();
+
+  const customEnvironmentVariables: ProcessEnv = Object.keys(process.env)
+    .filter((key) => !result.parsed?.hasOwnProperty(key))
+    .reduce<ProcessEnv>((acc, key) => {
+      acc[key] = process.env[key];
+      return acc;
+    }, {});
+
+  return customEnvironmentVariables;
+}
+
 // Asynchronous execution of a shell command
 function execAsync(command: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    const p = exec(command, async (error, stdout, stderr) => {
-      if (error) {
-        await publishLog(`${DEPLOYMENT_STATUS.ERROR}: ${error.toString()}`);
-        reject(error);
-      } else {
-        await publishLog(stdout.toString());
-        resolve();
-      }
-    });
+    const p = exec(
+      command,
+      { env: customEnvironmentForExec() },
+      async (error, stdout, stderr) => {
+        if (error) {
+          await publishLog(`${DEPLOYMENT_STATUS.ERROR}: ${error.toString()}`);
+          reject(error);
+        } else {
+          await publishLog(stdout.toString());
+          resolve();
+        }
+      },
+    );
 
     p.stdout?.on('data', async (data) => {
       await publishLog(data.toString());
