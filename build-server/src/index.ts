@@ -102,11 +102,10 @@ async function uploadFileToS3(filePath: string, s3Key: string): Promise<void> {
 }
 
 // Function to get env without .env variables
-function customEnvironmentForExec() {
-  interface ProcessEnv {
-    [key: string]: string | undefined;
-  }
-
+interface ProcessEnv {
+  [key: string]: string | undefined;
+}
+function customEnvironmentForExec(): ProcessEnv {
   const result = dotenv.config();
 
   const customEnvironmentVariables: ProcessEnv = Object.keys(process.env)
