@@ -30,7 +30,7 @@ jobs:
     needs: build
     runs-on: [self-hosted]
     steps:
-      - name: Delete old containers
-        run: docker-compose down --volumes --rmi local
+      - name: Docker pull
+        run: docker-compose pull
       - name: Run docker containers
-        run: docker-compose up -d
+        run: docker-compose up -d --remove-orphans
